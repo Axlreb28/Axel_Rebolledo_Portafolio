@@ -1,927 +1,941 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vacaciones · Equipo</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+ 
 <style>
-  :root {
-    --sand: #F5EDD6;
-    --cream: #FAF6EE;
-    --terracotta: #C8603A;
-    --terracotta-light: #E8876A;
-    --sage: #6B8F71;
-    --sage-light: #A8C4AA;
-    --navy: #1C2B3A;
-    --navy-light: #2E4057;
-    --gold: #D4A847;
-    --text: #2A2015;
-    --muted: #8A7560;
+  :root{
+    --bg:#0A0D12;
+    --bg-1:#0D1117;
+    --panel:#10141C;
+    --panel-2:#151B25;
+    --border:#212734;
+    --border-soft:#1A2029;
+    --text:#E7EAF0;
+    --text-dim:#9AA3B2;
+    --text-faint:#5C6577;
+    --accent:#5B8DEF;
+    --accent-dim:#5B8DEF33;
+    --amber:#F2B84B;
+    --amber-dim:#F2B84B26;
+    --teal:#45D6A6;
+    --teal-dim:#45D6A626;
+    --red:#F0555C;
+    --red-dim:#F0555C26;
+    --radius:10px;
+    --mono:'JetBrains Mono',monospace;
+    --disp:'Space Grotesk',sans-serif;
+    --body:'Inter',sans-serif;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
   }
-
-  /* BG texture */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      radial-gradient(ellipse at 20% 0%, rgba(200,96,58,0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 100%, rgba(107,143,113,0.1) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
+  ::selection{background:var(--accent-dim);color:var(--text);}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+ 
+  #shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+ 
+  /* ---------- SIDEBAR ---------- */
+  #sidebar{
+    background:var(--bg-1);
+    border-right:1px solid var(--border-soft);
+    display:flex;flex-direction:column;
+    position:sticky;top:0;height:100vh;
   }
-
-  /* ── HEADER ── */
-  header {
-    position: relative;
-    z-index: 1;
-    background: var(--navy);
-    padding: 0;
-    overflow: hidden;
+  .brand{
+    padding:20px 18px 16px;
+    border-bottom:1px solid var(--border-soft);
+    display:flex;align-items:center;gap:10px;
   }
-
-  .header-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 36px 40px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+  .brand-mark{
+    width:32px;height:32px;border-radius:8px;
+    background:linear-gradient(135deg,var(--accent),#3862c7);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--disp);font-weight:700;font-size:14px;color:#fff;
+    flex-shrink:0;
   }
-
-  .header-left h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(28px, 4vw, 46px);
-    font-weight: 900;
-    color: var(--sand);
-    line-height: 1.1;
-    letter-spacing: -0.5px;
+  .brand-text{line-height:1.2;}
+  .brand-text .n{font-family:var(--disp);font-weight:600;font-size:13.5px;letter-spacing:.2px;}
+  .brand-text .r{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;}
+ 
+  nav.navlist{padding:14px 10px;flex:1;overflow-y:auto;}
+  .nav-label{
+    font-family:var(--mono);font-size:10px;color:var(--text-faint);
+    text-transform:uppercase;letter-spacing:.1em;
+    padding:14px 10px 6px;
   }
-
-  .header-left h1 span {
-    color: var(--terracotta-light);
+  .nav-item{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 10px;border-radius:8px;
+    color:var(--text-dim);font-size:13px;font-weight:500;
+    margin-bottom:2px;border:1px solid transparent;
+    transition:background .12s,color .12s;
+    position:relative;
   }
-
-  .header-left p {
-    margin-top: 8px;
-    color: rgba(245,237,214,0.55);
-    font-size: 14px;
-    font-weight: 300;
-    letter-spacing: 0.5px;
+  .nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.85;}
+  .nav-item:hover{background:var(--panel-2);color:var(--text);}
+  .nav-item.active{background:var(--accent-dim);color:var(--text);border-color:#5B8DEF3D;}
+  .nav-item.active::before{
+    content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    width:3px;height:16px;background:var(--accent);border-radius:2px;
   }
-
-  .header-deco {
-    font-size: 64px;
-    opacity: 0.15;
-    line-height: 1;
-    user-select: none;
+  .nav-kbd{
+    margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--text-faint);
+    border:1px solid var(--border);border-radius:4px;padding:1px 5px;
   }
-
-  /* ── YEAR NAV ── */
-  .year-nav {
-    position: relative;
-    z-index: 1;
-    background: var(--navy-light);
-    padding: 12px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
+  .sidebar-foot{
+    padding:12px 16px;border-top:1px solid var(--border-soft);
+    font-family:var(--mono);font-size:10.5px;color:var(--text-faint);
+    display:flex;align-items:center;gap:6px;
   }
-
-  .year-nav button {
-    background: none;
-    border: none;
-    color: var(--sand);
-    font-size: 20px;
-    cursor: pointer;
-    padding: 4px 10px;
-    border-radius: 6px;
-    transition: background 0.2s;
+  .dot-live{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 #45D6A655;}50%{opacity:.55;box-shadow:0 0 0 4px #45D6A600;}}
+ 
+  /* ---------- MAIN ---------- */
+  #main{display:flex;flex-direction:column;min-width:0;}
+  #topbar{
+    height:56px;flex-shrink:0;
+    border-bottom:1px solid var(--border-soft);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;background:var(--bg);position:sticky;top:0;z-index:5;
   }
-  .year-nav button:hover { background: rgba(255,255,255,0.1); }
-
-  .year-nav .year-label {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    color: var(--sand);
-    font-weight: 700;
-    min-width: 80px;
-    text-align: center;
+  .breadcrumb{font-family:var(--mono);font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+  .breadcrumb b{color:var(--text);font-weight:500;}
+  .topbar-right{display:flex;align-items:center;gap:16px;}
+  .status-pill{
+    display:flex;align-items:center;gap:7px;
+    font-family:var(--mono);font-size:11px;color:var(--teal);
+    background:var(--teal-dim);border:1px solid #45D6A63D;
+    padding:5px 10px;border-radius:20px;
   }
-
-  /* ── MAIN LAYOUT ── */
-  .main {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 20px 60px;
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 32px;
-    align-items: start;
+  .clock{font-family:var(--mono);font-size:12px;color:var(--text-dim);}
+ 
+  #content{padding:26px 28px 60px;max-width:1240px;width:100%;}
+  .page{display:none;}
+  .page.active{display:block;animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+ 
+  .page-head{margin-bottom:22px;}
+  .page-eyebrow{font-family:var(--mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+  .page-title{font-family:var(--disp);font-size:24px;font-weight:600;margin:0 0 6px;}
+  .page-sub{font-size:13.5px;color:var(--text-dim);max-width:640px;line-height:1.6;margin:0;}
+ 
+  /* ---------- PANELS / CARDS ---------- */
+  .panel{
+    background:var(--panel);border:1px solid var(--border);
+    border-radius:var(--radius);padding:18px;
   }
-
-  @media (max-width: 820px) {
-    .main { grid-template-columns: 1fr; }
-    .header-inner { padding: 24px 20px 20px; }
-    .year-nav { padding: 12px 20px; }
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .panel-title{font-size:12.5px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px;}
+  .panel-title .sw{width:6px;height:6px;border-radius:2px;background:var(--accent);}
+  .panel-meta{font-family:var(--mono);font-size:10px;color:var(--text-faint);}
+ 
+  .grid{display:grid;gap:16px;}
+  .g-4{grid-template-columns:repeat(4,1fr);}
+  .g-3{grid-template-columns:repeat(3,1fr);}
+  .g-2{grid-template-columns:repeat(2,1fr);}
+  @media(max-width:1000px){.g-4{grid-template-columns:repeat(2,1fr);}.g-3{grid-template-columns:repeat(2,1fr);}.g-2{grid-template-columns:1fr;}}
+ 
+  .metric-card{
+    background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    padding:16px 16px 14px;position:relative;overflow:hidden;
   }
-
-  /* ── CALENDAR GRID ── */
-  .calendar-section h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    color: var(--navy);
-    margin-bottom: 20px;
-    font-weight: 700;
+  .metric-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .metric-label{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;}
+  .metric-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+  .metric-icon svg{width:14px;height:14px;}
+  .metric-value{font-family:var(--disp);font-size:26px;font-weight:700;line-height:1;}
+  .metric-foot{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-top:8px;}
+  .metric-foot.up{color:var(--teal);}
+ 
+  .badge{
+    font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:.04em;font-weight:600;
+    border:1px solid transparent;display:inline-block;
   }
-
-  .months-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+  .badge.blue{background:var(--accent-dim);color:var(--accent);border-color:#5B8DEF3D;}
+  .badge.amber{background:var(--amber-dim);color:var(--amber);border-color:#F2B84B3D;}
+  .badge.teal{background:var(--teal-dim);color:var(--teal);border-color:#45D6A63D;}
+  .badge.gray{background:#ffffff0d;color:var(--text-dim);border-color:var(--border);}
+ 
+  code, .mono{font-family:var(--mono);}
+ 
+  /* ---------- TABLE-ISH LIST ---------- */
+  .rowlist{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+  .rowlist-head, .rowlist-row{
+    display:grid;padding:10px 14px;align-items:center;
+    border-bottom:1px solid var(--border-soft);
   }
-
-  .month-card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(28,43,58,0.07);
-    border: 1px solid rgba(28,43,58,0.06);
-    transition: box-shadow 0.2s;
+  .rowlist-head{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;background:var(--panel-2);}
+  .rowlist-row{font-size:12.5px;background:var(--panel);transition:background .12s;}
+  .rowlist-row:last-child{border-bottom:none;}
+  .rowlist-row:hover{background:var(--panel-2);}
+ 
+  /* ---------- PROJECTS ---------- */
+  .proj-cols{grid-template-columns:1.4fr .8fr .8fr 1fr;}
+  .proj-card{
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);
+    margin-bottom:12px;overflow:hidden;
   }
-  .month-card:hover { box-shadow: 0 4px 20px rgba(28,43,58,0.12); }
-
-  .month-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--navy);
-    margin-bottom: 12px;
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .proj-summary{
+    display:grid;grid-template-columns:1.4fr .8fr .8fr 1fr;align-items:center;
+    padding:14px 16px;cursor:pointer;
   }
-
-  .month-name::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--sand);
+  .proj-summary:hover{background:var(--panel-2);}
+  .proj-name{font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:3px;}
+  .proj-id{font-family:var(--mono);font-size:10px;color:var(--text-faint);}
+  .proj-tech{display:flex;gap:5px;flex-wrap:wrap;}
+  .chev{width:14px;height:14px;color:var(--text-faint);transition:transform .18s;margin-left:auto;}
+  .proj-card.open .chev{transform:rotate(90deg);}
+  .proj-detail{max-height:0;overflow:hidden;transition:max-height .3s ease;border-top:1px solid var(--border-soft);}
+  .proj-card.open .proj-detail{max-height:900px;}
+  .proj-detail-inner{padding:18px 20px 22px;display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .pd-block h4{
+    font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--accent);margin:0 0 6px;
   }
-
-  .day-headers {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    margin-bottom: 4px;
+  .pd-block p{font-size:12.5px;color:var(--text-dim);line-height:1.65;margin:0;}
+  .pd-actions{grid-column:1/-1;display:flex;gap:10px;padding-top:4px;}
+  .btn{
+    font-family:var(--mono);font-size:11.5px;padding:8px 14px;border-radius:7px;
+    border:1px solid var(--border);background:var(--panel-2);color:var(--text);
+    display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,color .15s;
   }
-
-  .day-header {
-    text-align: center;
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--muted);
-    letter-spacing: 0.5px;
-    padding: 3px 0;
-    text-transform: uppercase;
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.primary:hover{opacity:.9;color:#fff;}
+ 
+  /* ---------- SQL LAB ---------- */
+  .console{
+    background:#080A0E;border:1px solid var(--border);border-radius:var(--radius);
+    font-family:var(--mono);font-size:12.5px;overflow:hidden;
   }
-
-  .days-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+  .console-bar{
+    display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border-soft);background:var(--panel-2);
   }
-
-  .day-cell {
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 400;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.15s;
-    color: var(--text);
-    user-select: none;
+  .cdot{width:9px;height:9px;border-radius:50%;}
+  .console-title{margin-left:6px;color:var(--text-faint);font-size:11px;}
+  #console-out{height:360px;overflow-y:auto;padding:14px 16px;line-height:1.75;color:var(--text-dim);}
+  #console-out .ln-cmd{color:var(--teal);}
+  #console-out .ln-cmd::before{content:'❯ ';color:var(--text-faint);}
+  #console-out .hint{color:var(--text-faint);}
+  #console-out b{color:var(--text);}
+  #console-out .k{color:var(--amber);}
+  #console-out table{border-collapse:collapse;margin:6px 0 4px;width:100%;}
+  #console-out td, #console-out th{padding:3px 10px 3px 0;text-align:left;font-size:12px;}
+  #console-out th{color:var(--text-faint);border-bottom:1px solid var(--border-soft);text-transform:uppercase;font-size:10px;letter-spacing:.05em;}
+  .console-input-row{display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid var(--border-soft);}
+  .console-input-row span{color:var(--text-faint);}
+  #console-input{
+    flex:1;background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:12.5px;
   }
-
-  .day-cell.empty { cursor: default; }
-  .day-cell.past { color: #ccc; cursor: default; }
-
-  .day-cell:not(.empty):not(.past):hover {
-    background: var(--sand);
-    transform: scale(1.1);
+  #console-input:focus{outline:none;}
+  .sql-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .sql-chip{
+    font-family:var(--mono);font-size:11px;padding:5px 10px;border:1px solid var(--border);
+    border-radius:6px;color:var(--text-dim);background:var(--panel-2);
   }
-
-  .day-cell.today {
-    font-weight: 700;
-    color: var(--terracotta);
+  .sql-chip:hover{border-color:var(--accent);color:var(--accent);}
+ 
+  /* ---------- SKILLS ---------- */
+  .skill-cat{border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);padding:16px;}
+  .skill-cat h3{font-family:var(--disp);font-size:14px;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  .skill-tags{display:flex;flex-wrap:wrap;gap:7px;}
+  .skill-tag{
+    font-size:11.5px;padding:5px 10px;border-radius:6px;background:var(--panel-2);
+    border:1px solid var(--border-soft);color:var(--text-dim);display:flex;align-items:center;gap:6px;
   }
-  .day-cell.today::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--terracotta);
+  .lv-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .lv-core{background:var(--teal);}
+  .lv-prof{background:var(--accent);}
+  .lv-learn{background:var(--amber);}
+  .legend{display:flex;gap:16px;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-top:16px;}
+  .legend span{display:flex;align-items:center;gap:6px;}
+ 
+  /* ---------- KNOWLEDGE ---------- */
+  .kc-card{border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);padding:16px;height:100%;}
+  .kc-topic{font-family:var(--mono);font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .kc-card h4{font-family:var(--disp);font-size:14.5px;margin:0 0 8px;}
+  .kc-card p{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;}
+ 
+  /* ---------- TIMELINE ---------- */
+  .tl{position:relative;padding-left:26px;}
+  .tl::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:var(--border);}
+  .tl-item{position:relative;padding-bottom:26px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot{position:absolute;left:-26px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent);}
+  .tl-item.current .tl-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+  .tl-phase{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+  .tl-item h4{font-family:var(--disp);font-size:14.5px;margin:0 0 6px;}
+  .tl-item p{font-size:12.5px;color:var(--text-dim);line-height:1.6;margin:0 0 8px;max-width:560px;}
+ 
+  /* ---------- ARCHITECTURE ---------- */
+  .arch-layer{
+    border:1px solid var(--border);border-radius:9px;padding:12px 16px;background:var(--panel-2);
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:0;
   }
-
-  /* vacation colors per user */
-  .day-cell.booked {
-    border-radius: 6px;
-    font-weight: 500;
+  .arch-name{font-family:var(--mono);font-size:12px;font-weight:600;}
+  .arch-desc{font-size:11.5px;color:var(--text-faint);}
+  .arch-arrow{display:flex;justify-content:center;color:var(--text-faint);font-size:12px;padding:4px 0;}
+ 
+  /* ---------- CONTACT / RESUME ---------- */
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+  .field input, .field textarea{
+    width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:7px;
+    padding:10px 12px;color:var(--text);font-family:var(--body);font-size:13px;
   }
-
-  .day-cell .dots {
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 2px;
+  .field input:focus, .field textarea:focus{outline:none;border-color:var(--accent);}
+  .field textarea{resize:vertical;min-height:90px;}
+  .contact-info-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-soft);}
+  .contact-info-row:last-child{border-bottom:none;}
+  .contact-info-row .ic{width:30px;height:30px;border-radius:7px;background:var(--panel-2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;}
+  .contact-info-row .ic svg{width:14px;height:14px;}
+  .contact-info-row .lbl{font-family:var(--mono);font-size:9.5px;color:var(--text-faint);text-transform:uppercase;}
+  .contact-info-row .val{font-size:12.5px;}
+  .toast{
+    position:fixed;bottom:22px;right:22px;background:var(--panel-2);border:1px solid var(--teal);
+    color:var(--text);padding:12px 16px;border-radius:9px;font-size:12.5px;display:flex;align-items:center;gap:9px;
+    transform:translateY(120%);transition:transform .3s ease;z-index:50;font-family:var(--mono);
   }
-
-  .day-cell .dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {}
-
-  /* ── BOOKING FORM ── */
-  .form-card {
-    background: var(--navy);
-    border-radius: 20px;
-    padding: 28px;
-    color: var(--sand);
-    margin-bottom: 24px;
-  }
-
-  .form-card h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--sand);
-  }
-
-  .form-group {
-    margin-bottom: 14px;
-  }
-
-  .form-group label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: rgba(245,237,214,0.6);
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-
-  .form-group select,
-  .form-group input {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1.5px solid rgba(245,237,214,0.15);
-    background: rgba(255,255,255,0.06);
-    color: var(--sand);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .form-group select:focus,
-  .form-group input:focus {
-    border-color: var(--terracotta-light);
-  }
-
-  .form-group select option { background: var(--navy); }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .btn-save {
-    width: 100%;
-    padding: 12px;
-    background: var(--terracotta);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: background 0.2s, transform 0.1s;
-    letter-spacing: 0.3px;
-  }
-
-  .btn-save:hover { background: var(--terracotta-light); }
-  .btn-save:active { transform: scale(0.98); }
-
-  /* ── TEAM LEGEND ── */
-  .legend-card {
-    background: white;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 2px 12px rgba(28,43,58,0.07);
-    border: 1px solid rgba(28,43,58,0.06);
-    margin-bottom: 24px;
-  }
-
-  .legend-card h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--navy);
-    margin-bottom: 16px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 10px;
-    margin-bottom: 6px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .legend-item:hover { background: var(--cream); }
-
-  .legend-dot {
-    width: 14px; height: 14px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-
-  .legend-name {
-    font-size: 14px;
-    font-weight: 500;
-    flex: 1;
-  }
-
-  .legend-days {
-    font-size: 12px;
-    color: var(--muted);
-    background: var(--cream);
-    padding: 2px 8px;
-    border-radius: 20px;
-  }
-
-  /* ── UPCOMING ── */
-  .upcoming-card {
-    background: white;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 2px 12px rgba(28,43,58,0.07);
-    border: 1px solid rgba(28,43,58,0.06);
-  }
-
-  .upcoming-card h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--navy);
-    margin-bottom: 16px;
-  }
-
-  .upcoming-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--sand);
-    align-items: flex-start;
-  }
-  .upcoming-item:last-child { border-bottom: none; }
-
-  .upcoming-dot {
-    width: 10px; height: 10px;
-    border-radius: 3px;
-    margin-top: 4px;
-    flex-shrink: 0;
-  }
-
-  .upcoming-info .name {
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  .upcoming-info .dates {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-
-  .upcoming-info .note {
-    font-size: 11px;
-    color: var(--sage);
-    font-style: italic;
-    margin-top: 2px;
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--navy);
-    color: var(--sand);
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-size: 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-    z-index: 9999;
-    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* ── DELETE BTN on day hover ── */
-  .day-cell .del-btn {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(200,50,50,0.15);
-    border-radius: 6px;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
-
-  .day-tooltip {
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--navy);
-    color: var(--sand);
-    font-size: 10px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-    z-index: 10;
-  }
-
-  .day-cell:hover .day-tooltip { opacity: 1; }
-
-  /* No upcoming */
-  .no-upcoming {
-    text-align: center;
-    color: var(--muted);
-    font-size: 13px;
-    padding: 16px 0;
-  }
-
-  .conflict-badge {
-    display: inline-block;
-    background: var(--terracotta);
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 6px;
-    vertical-align: middle;
+  .toast.show{transform:translateY(0);}
+ 
+  canvas{max-width:100%;}
+  .chart-wrap{position:relative;}
+ 
+  @media (max-width:860px){
+    #shell{grid-template-columns:1fr;}
+    #sidebar{position:fixed;left:-260px;width:220px;z-index:40;transition:left .2s;}
+    #sidebar.open{left:0;}
+    .g-4,.g-3{grid-template-columns:repeat(2,1fr);}
+    .proj-detail-inner{grid-template-columns:1fr;}
   }
 </style>
-</head>
-<body>
-
-<header>
-  <div class="header-inner">
-    <div class="header-left">
-      <h1>Vacaciones <span>Equipo</span></h1>
-      <p>Planifica y coordina los días de descanso del equipo</p>
-    </div>
-    <div class="header-deco">🌴</div>
-  </div>
-</header>
-
-<div class="year-nav">
-  <button id="prevYear">&#8592;</button>
-  <span class="year-label" id="yearLabel">2025</span>
-  <button id="nextYear">&#8594;</button>
-</div>
-
-<div class="main">
-  <div class="calendar-section">
-    <h2 id="calTitle">Calendario 2025</h2>
-    <div class="months-grid" id="monthsGrid"></div>
-  </div>
-
-  <div class="sidebar">
-    <!-- FORM -->
-    <div class="form-card">
-      <h3>✈️ Agregar vacaciones</h3>
-      <div class="form-group">
-        <label>Compañero</label>
-        <select id="selUser"></select>
+ 
+<div id="shell">
+  <!-- ================= SIDEBAR ================= -->
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">AR</div>
+      <div class="brand-text">
+        <div class="n">Axel Rebolledo</div>
+        <div class="r">Data &amp; Backend Eng.</div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Desde</label>
-          <input type="date" id="dateFrom">
+    </div>
+    <nav class="navlist" id="navlist">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" data-page="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-page="analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+        Analytics
+      </div>
+      <div class="nav-label">Work</div>
+      <div class="nav-item" data-page="projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Projects
+      </div>
+      <div class="nav-item" data-page="sqllab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v4H4z"/><path d="M4 8l4 12h8l4-12"/></svg>
+        SQL Lab
+      </div>
+      <div class="nav-item" data-page="architecture">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="4" rx="1"/><rect x="4" y="10" width="16" height="4" rx="1"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg>
+        Architecture
+      </div>
+      <div class="nav-item" data-page="knowledge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Knowledge Center
+      </div>
+      <div class="nav-label">Profile</div>
+      <div class="nav-item" data-page="skills">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 6.5 7 .9-5.2 4.8L18.2 21 12 17.3 5.8 21l1.4-6.8L2 9.4l7-.9z"/></svg>
+        Skills
+      </div>
+      <div class="nav-item" data-page="experience">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Experience
+      </div>
+      <div class="nav-item" data-page="resume">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Resume
+      </div>
+      <div class="nav-item" data-page="contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        Contact
+      </div>
+    </nav>
+    <div class="sidebar-foot"><span class="dot-live"></span> SYSTEM OPERATIONAL</div>
+  </aside>
+ 
+  <!-- ================= MAIN ================= -->
+  <div id="main">
+    <div id="topbar">
+      <div class="breadcrumb">portfolio<span>/</span><b id="crumb-current">dashboard</b></div>
+      <div class="topbar-right">
+        <div class="status-pill"><span class="dot-live"></span> All systems normal</div>
+        <div class="clock" id="clock">--:--:--</div>
+      </div>
+    </div>
+ 
+    <div id="content">
+ 
+      <!-- ============ DASHBOARD ============ -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-head">
+          <div class="page-eyebrow">// overview.status</div>
+          <h1 class="page-title">Engineering &amp; Data Dashboard</h1>
+          <p class="page-sub">Live snapshot of my work as a software developer moving toward data engineering — backend systems, database design and the analytics built on top of them.</p>
         </div>
-        <div class="form-group">
-          <label>Hasta</label>
-          <input type="date" id="dateTo">
+ 
+        <div class="grid g-4" id="metric-grid" style="margin-bottom:16px;"></div>
+ 
+        <div class="grid g-3">
+          <div class="panel" style="grid-column: span 2;">
+            <div class="panel-head">
+              <div class="panel-title"><span class="sw"></span>Learning &amp; delivery trend</div>
+              <div class="panel-meta">last 6 phases</div>
+            </div>
+            <div class="chart-wrap" style="height:220px;"><canvas id="chart-trend"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><span class="sw"></span>Activity log</div>
+              <div class="panel-meta">auto-generated</div>
+            </div>
+            <div id="activity-feed" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <label>Nota (opcional)</label>
-        <input type="text" id="note" placeholder="Ej: Playa, familia...">
-      </div>
-      <button class="btn-save" id="btnSave">Guardar 🌴</button>
-    </div>
-
-    <!-- LEGEND -->
-    <div class="legend-card">
-      <h3>🧑‍💼 Equipo</h3>
-      <div id="legendList"></div>
-    </div>
-
-    <!-- UPCOMING -->
-    <div class="upcoming-card">
-      <h3>📅 Próximas vacaciones</h3>
-      <div id="upcomingList"></div>
+      </section>
+ 
+      <!-- ============ ANALYTICS ============ -->
+      <section class="page" id="page-analytics">
+        <div class="page-head">
+          <div class="page-eyebrow">// bi.workbench</div>
+          <h1 class="page-title">Analytics</h1>
+          <p class="page-sub">A breakdown of the stack and project mix, presented the way I'd present it to a stakeholder: distributions, categories and a status view.</p>
+        </div>
+ 
+        <div class="grid g-2" style="margin-bottom:16px;">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="sw"></span>Technology distribution</div><div class="panel-meta">by usage</div></div>
+            <div class="chart-wrap" style="height:230px;"><canvas id="chart-tech"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="sw"></span>Backend vs. Data-focused work</div><div class="panel-meta">project split</div></div>
+            <div class="chart-wrap" style="height:230px;"><canvas id="chart-split"></canvas></div>
+          </div>
+        </div>
+ 
+        <div class="grid g-2" style="margin-bottom:16px;">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="sw"></span>Skill coverage by category</div><div class="panel-meta">index / 5</div></div>
+            <div class="chart-wrap" style="height:250px;"><canvas id="chart-radar"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="sw"></span>SQL topics — depth of practice</div><div class="panel-meta">self-rated</div></div>
+            <div class="chart-wrap" style="height:250px;"><canvas id="chart-sql"></canvas></div>
+          </div>
+        </div>
+ 
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="sw"></span>Project status</div><div class="panel-meta">2 active records</div></div>
+          <div class="rowlist">
+            <div class="rowlist-head proj-cols"><div>Project</div><div>Category</div><div>Status</div><div>Core stack</div></div>
+            <div class="rowlist-row proj-cols"><div>Indicators Management System</div><div>Backend / BI</div><div><span class="badge teal">Production-grade</span></div><div class="mono">Laravel · MySQL</div></div>
+            <div class="rowlist-row proj-cols"><div>Webtoon Platform</div><div>Full-stack</div><div><span class="badge amber">In development</span></div><div class="mono">Laravel · MySQL · JS</div></div>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- ============ PROJECTS ============ -->
+      <section class="page" id="page-projects">
+        <div class="page-head">
+          <div class="page-eyebrow">// records.projects</div>
+          <h1 class="page-title">Projects</h1>
+          <p class="page-sub">Stored as records, not cards. Expand a row to see the full breakdown — problem, solution, architecture and results.</p>
+        </div>
+        <div id="projects-list"></div>
+      </section>
+ 
+      <!-- ============ SQL LAB ============ -->
+      <section class="page" id="page-sqllab">
+        <div class="page-head">
+          <div class="page-eyebrow">// interactive.console</div>
+          <h1 class="page-title">SQL Lab</h1>
+          <p class="page-sub">A console-flavored way to browse this portfolio. It doesn't execute real SQL — it just responds the way a query would.</p>
+        </div>
+        <div class="console">
+          <div class="console-bar">
+            <span class="cdot" style="background:#F0555C"></span>
+            <span class="cdot" style="background:#F2B84B"></span>
+            <span class="cdot" style="background:#45D6A6"></span>
+            <span class="console-title">axel_portfolio — psql</span>
+          </div>
+          <div id="console-out"></div>
+          <div class="console-input-row">
+            <span>portfolio=#</span>
+            <input id="console-input" type="text" autocomplete="off" spellcheck="false" placeholder="type: help" />
+          </div>
+        </div>
+        <div class="sql-chips">
+          <span class="sql-chip" data-cmd="help">help</span>
+          <span class="sql-chip" data-cmd="projects">projects</span>
+          <span class="sql-chip" data-cmd="skills">skills</span>
+          <span class="sql-chip" data-cmd="experience">experience</span>
+          <span class="sql-chip" data-cmd="analytics">analytics</span>
+          <span class="sql-chip" data-cmd="resume">resume</span>
+          <span class="sql-chip" data-cmd="contact">contact</span>
+        </div>
+      </section>
+ 
+      <!-- ============ ARCHITECTURE ============ -->
+      <section class="page" id="page-architecture">
+        <div class="page-head">
+          <div class="page-eyebrow">// system.design</div>
+          <h1 class="page-title">Architecture</h1>
+          <p class="page-sub">The general pattern I reach for on administrative / BI platforms like the Indicators Management System — layered, with a clear separation between presentation, logic, data and delivery.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="sw"></span>Reference stack — layered view</div><div class="panel-meta">Indicators Mgmt. System</div></div>
+          <div style="display:flex;flex-direction:column;">
+            <div class="arch-layer"><div><div class="arch-name">FRONTEND</div><div class="arch-desc">Blade views · JavaScript · HTML/CSS — dashboards, forms, charts</div></div><span class="badge blue">UI</span></div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer"><div><div class="arch-name">API / APPLICATION LAYER</div><div class="arch-desc">Laravel controllers &amp; routes — auth, role-based access, validation</div></div><span class="badge amber">Logic</span></div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer"><div><div class="arch-name">BACKEND SERVICES</div><div class="arch-desc">Business rules for indicators, departments and reporting</div></div><span class="badge amber">Logic</span></div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer"><div><div class="arch-name">DATABASE</div><div class="arch-desc">MySQL — normalized schema, indexes, views for reporting queries</div></div><span class="badge teal">Data</span></div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer"><div><div class="arch-name">DEPLOYMENT</div><div class="arch-desc">Version-controlled with Git, deployable to standard PHP hosting / Render</div></div><span class="badge gray">Ops</span></div>
+          </div>
+        </div>
+        <div class="grid g-3" style="margin-top:16px;">
+          <div class="panel"><div class="panel-title" style="margin-bottom:8px;"><span class="sw"></span>Data modeling</div><p style="font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;">Relational schemas designed around normalization, foreign keys and indexes so reporting queries stay fast as data grows.</p></div>
+          <div class="panel"><div class="panel-title" style="margin-bottom:8px;"><span class="sw"></span>Access control</div><p style="font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;">Role-based permissions separate what administrators, department heads and general users can see or edit.</p></div>
+          <div class="panel"><div class="panel-title" style="margin-bottom:8px;"><span class="sw"></span>Reporting layer</div><p style="font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;">Charts and maps sit on top of SQL views, keeping presentation logic separate from the underlying data.</p></div>
+        </div>
+      </section>
+ 
+      <!-- ============ KNOWLEDGE CENTER ============ -->
+      <section class="page" id="page-knowledge">
+        <div class="page-head">
+          <div class="page-eyebrow">// docs.internal</div>
+          <h1 class="page-title">Knowledge Center</h1>
+          <p class="page-sub">Topics I actively study and apply, kept here like internal documentation rather than a blog feed.</p>
+        </div>
+        <div class="grid g-3" id="knowledge-grid"></div>
+      </section>
+ 
+      <!-- ============ SKILLS ============ -->
+      <section class="page" id="page-skills">
+        <div class="page-head">
+          <div class="page-eyebrow">// capability.matrix</div>
+          <h1 class="page-title">Skills</h1>
+          <p class="page-sub">Grouped by domain rather than ranked with bars — level shown as a status dot: core, proficient, or learning.</p>
+        </div>
+        <div class="grid g-2" id="skills-grid"></div>
+        <div class="legend">
+          <span><span class="lv-dot lv-core"></span> Core — used daily</span>
+          <span><span class="lv-dot lv-prof"></span> Proficient</span>
+          <span><span class="lv-dot lv-learn"></span> Actively learning</span>
+        </div>
+      </section>
+ 
+      <!-- ============ EXPERIENCE ============ -->
+      <section class="page" id="page-experience">
+        <div class="page-head">
+          <div class="page-eyebrow">// career.roadmap</div>
+          <h1 class="page-title">Experience &amp; Roadmap</h1>
+          <p class="page-sub">Framed as a progression rather than a job list — where I built my foundation, and where I'm heading.</p>
+        </div>
+        <div class="panel"><div class="tl" id="timeline"></div></div>
+      </section>
+ 
+      <!-- ============ RESUME ============ -->
+      <section class="page" id="page-resume">
+        <div class="page-head">
+          <div class="page-eyebrow">// export.document</div>
+          <h1 class="page-title">Resume</h1>
+          <p class="page-sub">Same information as the dashboard, formatted for printing or export.</p>
+        </div>
+        <div class="panel" id="resume-doc" style="max-width:760px;">
+          <h2 style="font-family:var(--disp);margin:0 0 2px;">Axel Rebolledo Córdova</h2>
+          <p class="mono" style="color:var(--text-faint);font-size:11.5px;margin:0 0 16px;">Cancún, Quintana Roo, México · Data Engineer (career focus) · Backend Developer</p>
+          <div class="pd-block" style="margin-bottom:16px;">
+            <h4>Profile</h4>
+            <p>Software developer experienced in building web applications, relational databases, backend services and administrative systems — combining backend engineering with data analysis to turn raw data into dashboards, reports and business metrics. Working toward specializing as a Data Engineer.</p>
+          </div>
+          <div class="pd-block" style="margin-bottom:16px;">
+            <h4>Core stack</h4>
+            <p>PHP, Laravel, MySQL, JavaScript, PostgreSQL (learning), Python (learning), Power BI (learning), REST APIs, SQL optimization, data modeling.</p>
+          </div>
+          <div class="pd-block" style="margin-bottom:16px;">
+            <h4>Selected projects</h4>
+            <p>Indicators Management System — administrative BI platform with dashboards, role-based access and interactive reporting. Webtoon Platform — full-stack reading platform with a schema designed for future analytics and recommendations.</p>
+          </div>
+          <div class="pd-block">
+            <h4>Languages</h4>
+            <p>Spanish (native), English (B2).</p>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px;">
+            <button class="btn primary" onclick="window.print()">↓ Export / Print resume</button>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- ============ CONTACT ============ -->
+      <section class="page" id="page-contact">
+        <div class="page-head">
+          <div class="page-eyebrow">// channel.connect</div>
+          <h1 class="page-title">Contact</h1>
+          <p class="page-sub">Open to Data Engineering, Data Analytics and Backend Development opportunities.</p>
+        </div>
+        <div class="grid g-2">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="sw"></span>Send a message</div></div>
+            <div class="field"><label>Name</label><input type="text" placeholder="Your name" /></div>
+            <div class="field"><label>Email</label><input type="email" placeholder="you@example.com" /></div>
+            <div class="field"><label>Message</label><textarea placeholder="What are you looking to build?"></textarea></div>
+            <button class="btn primary" id="send-btn">Send message</button>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="sw"></span>Direct channels</div></div>
+            <div class="contact-info-row">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+              <div><div class="lbl">Email</div><div class="val">axel.rebolledo@example.com</div></div>
+            </div>
+            <div class="contact-info-row">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></div>
+              <div><div class="lbl">GitHub</div><div class="val">github.com/axelrebolledo</div></div>
+            </div>
+            <div class="contact-info-row">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/><path d="M10 21v-7a3 3 0 0 1 6 0v7M10 21v-9M16 21v-7"/></svg></div>
+              <div><div class="lbl">LinkedIn</div><div class="val">linkedin.com/in/axelrebolledo</div></div>
+            </div>
+            <div class="contact-info-row">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              <div><div class="lbl">Location</div><div class="val">Cancún, Quintana Roo, México</div></div>
+            </div>
+            <p class="mono" style="font-size:10px;color:var(--text-faint);margin-top:14px;">* placeholder contact details — replace with your real email / handles before publishing.</p>
+          </div>
+        </div>
+      </section>
+ 
     </div>
   </div>
 </div>
-
-<div class="toast" id="toast"></div>
-
+ 
+<div class="toast" id="toast">✓ Message queued for delivery</div>
+ 
 <script>
-/* ── CONFIG: Personas y colores ── */
-const USERS = [
-  { id: 'Gisela',    name: 'Gisela',    color: '#C8603A', bg: '#FDE8E0' },
-  { id: 'Emma', name: 'Emma', color: '#6B8F71', bg: '#DCF0DF' },
-  { id: 'Señor',  name: 'Señor',  color: '#4A7BB5', bg: '#D8E9F8' },
-  { id: 'Chico de mi edad',  name: 'Chico de mi edad',  color: '#A0689A', bg: '#EFD9ED' },
-];
-
-const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                     'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const DAY_NAMES = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
-
-/* ── STATE ── */
-let currentYear = new Date().getFullYear();
-let vacations = {}; // { 'YYYY-MM-DD': [{userId, note}] }
-
-const STORAGE_KEY = 'vacaciones_equipo_v1';
-
-/* ── PERSIST (localStorage for GitHub Pages) ── */
-function loadData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) vacations = JSON.parse(raw);
-  } catch(e) { vacations = {}; }
-}
-
-function saveData() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(vacations));
-  } catch(e) {}
-}
-
-/* ── HELPERS ── */
-function pad(n) { return String(n).padStart(2,'0'); }
-function dateKey(y,m,d) { return `${y}-${pad(m+1)}-${pad(d)}`; }
-function parseKey(k) { const [y,m,d]=k.split('-'); return {y:+y,m:+m-1,d:+d}; }
-
-function toastMsg(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=> t.classList.remove('show'), 2500);
-}
-
-function getUserById(id) { return USERS.find(u=>u.id===id); }
-
-function countDaysForUser(userId) {
-  let count = 0;
-  for (const key in vacations) {
-    if (vacations[key].some(e=>e.userId===userId)) count++;
+(function(){
+  Chart.defaults.color = '#9AA3B2';
+  Chart.defaults.font.family = "'JetBrains Mono', monospace";
+  Chart.defaults.font.size = 10.5;
+  Chart.defaults.borderColor = '#212734';
+ 
+  const COLORS = { accent:'#5B8DEF', amber:'#F2B84B', teal:'#45D6A6', red:'#F0555C', grid:'#1A2029', text:'#9AA3B2' };
+ 
+  /* ---------------- NAVIGATION ---------------- */
+  const navItems = document.querySelectorAll('.nav-item');
+  const pages = document.querySelectorAll('.page');
+  const crumb = document.getElementById('crumb-current');
+  let chartsInit = { analytics:false };
+ 
+  navItems.forEach(item=>{
+    item.addEventListener('click', ()=>{
+      navItems.forEach(n=>n.classList.remove('active'));
+      item.classList.add('active');
+      const target = item.dataset.page;
+      pages.forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-'+target).classList.add('active');
+      crumb.textContent = target;
+      if(target==='analytics' && !chartsInit.analytics){ initAnalyticsCharts(); chartsInit.analytics = true; }
+      window.scrollTo({top:0,behavior:'instant'});
+    });
+  });
+ 
+  /* ---------------- CLOCK ---------------- */
+  function tick(){
+    const d = new Date();
+    document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB');
   }
-  return count;
-}
-
-function getDaysInRange(from, to) {
-  const days = [];
-  const cur = new Date(from);
-  const end = new Date(to);
-  while (cur <= end) {
-    days.push(cur.toISOString().slice(0,10));
-    cur.setDate(cur.getDate()+1);
+  tick(); setInterval(tick, 1000);
+ 
+  /* ---------------- DASHBOARD METRICS ---------------- */
+  const metrics = [
+    { label:'Total Projects', value:'2', foot:'active records', icon:'blue' },
+    { label:'Technologies Used', value:'20+', foot:'across the stack', icon:'amber' },
+    { label:'Dashboards Built', value:'5+', foot:'BI &amp; admin panels', icon:'teal' },
+    { label:'DB Models Designed', value:'15+', foot:'normalized schemas', icon:'blue' },
+  ];
+  const iconSvg = {
+    blue:'<svg viewBox="0 0 24 24" fill="none" stroke="#5B8DEF" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>',
+    amber:'<svg viewBox="0 0 24 24" fill="none" stroke="#F2B84B" stroke-width="2"><path d="M12 2l3 6.5 7 .9-5.2 4.8L18.2 21 12 17.3 5.8 21l1.4-6.8L2 9.4l7-.9z"/></svg>',
+    teal:'<svg viewBox="0 0 24 24" fill="none" stroke="#45D6A6" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>'
+  };
+  const metricGrid = document.getElementById('metric-grid');
+  metrics.forEach(m=>{
+    const bg = m.icon==='blue'?'var(--accent-dim)':m.icon==='amber'?'var(--amber-dim)':'var(--teal-dim)';
+    metricGrid.insertAdjacentHTML('beforeend', `
+      <div class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">${m.label}</span>
+          <span class="metric-icon" style="background:${bg}">${iconSvg[m.icon]}</span>
+        </div>
+        <div class="metric-value">${m.value}</div>
+        <div class="metric-foot up">${m.foot}</div>
+      </div>`);
+  });
+ 
+  const activity = [
+    { t:'Shipped', d:'Role-based access module — Indicators Management System', when:'phase 4' },
+    { t:'Optimized', d:'Query plan &amp; indexes on reporting views', when:'phase 4' },
+    { t:'Designed', d:'Schema for reading progress &amp; favorites — Webtoon Platform', when:'phase 3' },
+    { t:'Learning', d:'PostgreSQL, Python and ETL fundamentals', when:'ongoing' },
+  ];
+  const feed = document.getElementById('activity-feed');
+  activity.forEach(a=>{
+    feed.insertAdjacentHTML('beforeend', `
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <span class="badge blue" style="flex-shrink:0;">${a.t}</span>
+        <div>
+          <div style="font-size:12px;color:var(--text);line-height:1.5;">${a.d}</div>
+          <div class="mono" style="font-size:10px;color:var(--text-faint);margin-top:2px;">${a.when}</div>
+        </div>
+      </div>`);
+  });
+ 
+  new Chart(document.getElementById('chart-trend'), {
+    type:'line',
+    data:{ labels:['P1','P2','P3','P4','P5','Now'],
+      datasets:[{ label:'Backend delivery', data:[2,3,4,5,6,7], borderColor:COLORS.accent, backgroundColor:COLORS.accent+'22', tension:.35, fill:true, pointRadius:3 },
+                { label:'Data/analytics skills', data:[1,1,2,3,5,6], borderColor:COLORS.teal, backgroundColor:'transparent', tension:.35, pointRadius:3 }]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ boxWidth:8, boxHeight:8, usePointStyle:true } } },
+      scales:{ x:{ grid:{ color:COLORS.grid } }, y:{ grid:{ color:COLORS.grid }, beginAtZero:true } } }
+  });
+ 
+  /* ---------------- ANALYTICS CHARTS (lazy) ---------------- */
+  function initAnalyticsCharts(){
+    new Chart(document.getElementById('chart-tech'), {
+      type:'doughnut',
+      data:{ labels:['Laravel/PHP','SQL/MySQL','JavaScript','PostgreSQL','React','Other'],
+        datasets:[{ data:[30,25,18,12,9,6], backgroundColor:[COLORS.accent,COLORS.teal,COLORS.amber,'#8B6FE8','#4FA3D1','#5C6577'], borderColor:'#10141C', borderWidth:3 }]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ boxWidth:8, boxHeight:8, usePointStyle:true, font:{ size:10.5 } } } } }
+    });
+ 
+    new Chart(document.getElementById('chart-split'), {
+      type:'bar',
+      data:{ labels:['Indicators Mgmt. System','Webtoon Platform'],
+        datasets:[
+          { label:'Backend work', data:[70,55], backgroundColor:COLORS.accent, borderRadius:4 },
+          { label:'Data/analytics work', data:[55,25], backgroundColor:COLORS.teal, borderRadius:4 }
+        ]},
+      options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+        plugins:{ legend:{ position:'bottom', labels:{ boxWidth:8, boxHeight:8, usePointStyle:true } } },
+        scales:{ x:{ grid:{ color:COLORS.grid } }, y:{ grid:{ display:false } } } }
+    });
+ 
+    new Chart(document.getElementById('chart-radar'), {
+      type:'radar',
+      data:{ labels:['Backend','Databases','Data Engineering','Data Analytics','Frontend','Tools'],
+        datasets:[{ label:'Coverage index', data:[5,5,3,3,3,4], borderColor:COLORS.accent, backgroundColor:COLORS.accent+'26', pointBackgroundColor:COLORS.accent }]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ r:{ grid:{ color:COLORS.grid }, angleLines:{ color:COLORS.grid }, pointLabels:{ font:{ size:10.5 } }, ticks:{ display:false, stepSize:1 }, suggestedMin:0, suggestedMax:5 } } }
+    });
+ 
+    new Chart(document.getElementById('chart-sql'), {
+      type:'bar',
+      data:{ labels:['Indexes','Joins','Views','Normalization','Stored Proc.','Exec. Plans'],
+        datasets:[{ data:[5,5,4,5,3,3], backgroundColor:COLORS.amber, borderRadius:4 }]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:COLORS.grid }, suggestedMax:5, ticks:{ stepSize:1 } } } }
+    });
   }
-  return days;
-}
-
-/* ── RENDER CALENDAR ── */
-function renderCalendar() {
-  const grid = document.getElementById('monthsGrid');
-  grid.innerHTML = '';
-  document.getElementById('calTitle').textContent = `Calendario ${currentYear}`;
-  document.getElementById('yearLabel').textContent = currentYear;
-
-  const today = new Date();
-  const todayKey = today.toISOString().slice(0,10);
-
-  for (let m = 0; m < 12; m++) {
+ 
+  /* ---------------- PROJECTS ---------------- */
+  const projects = [
+    {
+      id:'PRJ-001', name:'Indicators Management System', status:'Production-grade', statusColor:'teal',
+      tech:['PHP','Laravel','MySQL','JavaScript'],
+      problem:'Organizations tracking operational indicators across departments needed a single system to record, validate and visualize that data instead of relying on scattered spreadsheets.',
+      solution:'A full administrative platform with authentication, department and role management, dynamic forms, and dashboards that turn raw entries into charts, maps and reports.',
+      architecture:'Laravel MVC backend over a normalized MySQL schema, with role-based middleware controlling access and dedicated views powering the reporting layer.',
+      challenges:'Designing a schema flexible enough for many indicator types without sacrificing query performance, and building an access model that scales across departments.',
+      results:'A working platform covering authentication, dashboards, interactive charts, maps and a full administrative panel — the largest system in the portfolio to date.',
+    },
+    {
+      id:'PRJ-002', name:'Webtoon Platform', status:'In development', statusColor:'amber',
+      tech:['Laravel','MySQL','JavaScript'],
+      problem:'Reading platforms like Webtoon rely on data models that must gracefully support growth — chapters, favorites, comments and eventually recommendations.',
+      solution:'A personal reading platform with authentication, chapters, favorites, comments and reading-progress tracking, built on a schema designed for future expansion.',
+      architecture:'Laravel backend with a relational schema anticipating reading history, followers, view analytics and recommendation features as later additions.',
+      challenges:'Modeling a database that stays clean today while leaving room for analytics-heavy features — view counts, recommendations — without a costly rebuild.',
+      results:'Core reading experience is functional; the schema is already shaped to support analytics and personalization in future iterations.',
+    }
+  ];
+ 
+  const projList = document.getElementById('projects-list');
+  projects.forEach((p,i)=>{
+    const techBadges = p.tech.map(t=>`<span class="badge gray">${t}</span>`).join(' ');
     const card = document.createElement('div');
-    card.className = 'month-card';
-
-    const firstDay = new Date(currentYear, m, 1);
-    const daysInMonth = new Date(currentYear, m+1, 0).getDate();
-    // Monday-first offset
-    let startDow = firstDay.getDay(); // 0=Sun
-    startDow = startDow === 0 ? 6 : startDow - 1;
-
-    card.innerHTML = `<div class="month-name">${MONTH_NAMES[m]}</div>
-      <div class="day-headers">${DAY_NAMES.map(d=>`<div class="day-header">${d}</div>`).join('')}</div>
-      <div class="days-grid" id="days-${m}"></div>`;
-    grid.appendChild(card);
-
-    const dg = card.querySelector(`#days-${m}`);
-
-    // Empty cells
-    for (let i=0; i<startDow; i++) {
-      const empty = document.createElement('div');
-      empty.className = 'day-cell empty';
-      dg.appendChild(empty);
-    }
-
-    for (let d=1; d<=daysInMonth; d++) {
-      const key = dateKey(currentYear, m, d);
-      const cell = document.createElement('div');
-      cell.className = 'day-cell';
-      if (key === todayKey) cell.classList.add('today');
-
-      const cellDate = new Date(currentYear, m, d);
-      const isPast = cellDate < new Date(today.toDateString());
-      if (isPast && key !== todayKey) cell.classList.add('past');
-
-      // Bookings
-      const entries = vacations[key] || [];
-
-      // Day number
-      const numSpan = document.createElement('span');
-      numSpan.textContent = d;
-      cell.appendChild(numSpan);
-
-      // Dots
-      if (entries.length > 0) {
-        const dotsDiv = document.createElement('div');
-        dotsDiv.className = 'dots';
-        entries.forEach(e => {
-          const u = getUserById(e.userId);
-          if (!u) return;
-          const dot = document.createElement('div');
-          dot.className = 'dot';
-          dot.style.background = u.color;
-          dotsDiv.appendChild(dot);
-        });
-        cell.appendChild(dotsDiv);
-
-        // Color background by first user
-        const firstUser = getUserById(entries[0].userId);
-        if (firstUser) {
-          cell.style.background = firstUser.bg;
-          cell.style.color = firstUser.color;
-          cell.style.fontWeight = '600';
-        }
-
-        // Tooltip
-        const tip = document.createElement('div');
-        tip.className = 'day-tooltip';
-        tip.textContent = entries.map(e=>{
-          const u=getUserById(e.userId);
-          return u ? (u.name + (e.note?` · ${e.note}`:'')) : '';
-        }).join(' | ');
-        cell.appendChild(tip);
-      }
-
-      // Click to remove (if has booking)
-      if (!isPast || key === todayKey) {
-        cell.addEventListener('click', () => {
-          if (entries.length > 0) {
-            // remove first user's entry on click
-            showRemoveModal(key, entries);
-          }
-        });
-      }
-
-      dg.appendChild(cell);
-    }
-  }
-
-  renderLegend();
-  renderUpcoming();
-}
-
-/* ── REMOVE MODAL (simple) ── */
-function showRemoveModal(key, entries) {
-  if (entries.length === 0) return;
-  const names = entries.map(e=>{
-    const u=getUserById(e.userId);
-    return u ? u.name : e.userId;
-  }).join(', ');
-  const {y,m,d}=parseKey(key);
-  const label=`${d} ${MONTH_NAMES[m]} ${y}`;
-  const confirm = window.confirm(`¿Eliminar vacaciones del ${label}?\n\nRegistrado: ${names}\n\nSe eliminará el primer registro.`);
-  if (confirm) {
-    const newEntries = [...entries];
-    newEntries.shift();
-    if (newEntries.length === 0) delete vacations[key];
-    else vacations[key] = newEntries;
-    saveData();
-    renderCalendar();
-    toastMsg('🗑️ Registro eliminado');
-  }
-}
-
-/* ── LEGEND ── */
-function renderLegend() {
-  const list = document.getElementById('legendList');
-  list.innerHTML = '';
-  USERS.forEach(u => {
-    const days = countDaysForUser(u.id);
-    const item = document.createElement('div');
-    item.className = 'legend-item';
-    item.innerHTML = `
-      <div class="legend-dot" style="background:${u.color}"></div>
-      <span class="legend-name">${u.name}</span>
-      <span class="legend-days">${days} días</span>`;
-    list.appendChild(item);
+    card.className = 'proj-card';
+    card.innerHTML = `
+      <div class="proj-summary">
+        <div><div class="proj-name">${p.name}</div><div class="proj-id">${p.id}</div></div>
+        <div class="proj-tech">${techBadges}</div>
+        <div><span class="badge ${p.statusColor}">${p.status}</span></div>
+        <div style="display:flex;align-items:center;">
+          <span class="mono" style="font-size:11px;color:var(--text-faint);">view record</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="proj-detail"><div class="proj-detail-inner">
+        <div class="pd-block"><h4>Problem</h4><p>${p.problem}</p></div>
+        <div class="pd-block"><h4>Solution</h4><p>${p.solution}</p></div>
+        <div class="pd-block"><h4>Architecture</h4><p>${p.architecture}</p></div>
+        <div class="pd-block"><h4>Challenges</h4><p>${p.challenges}</p></div>
+        <div class="pd-block" style="grid-column:1/-1;"><h4>Results</h4><p>${p.results}</p></div>
+        <div class="pd-actions">
+          <button class="btn primary">View demo</button>
+          <button class="btn">View repository</button>
+        </div>
+      </div></div>`;
+    card.querySelector('.proj-summary').addEventListener('click', ()=> card.classList.toggle('open'));
+    projList.appendChild(card);
   });
-}
-
-/* ── UPCOMING ── */
-function renderUpcoming() {
-  const list = document.getElementById('upcomingList');
-  list.innerHTML = '';
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  // Collect ranges
-  const allEntries = [];
-  for (const key in vacations) {
-    const {y,m,d}=parseKey(key);
-    const date = new Date(y,m,d);
-    if (date >= today) {
-      vacations[key].forEach(e => {
-        allEntries.push({key, date, userId: e.userId, note: e.note});
-      });
+ 
+  /* ---------------- KNOWLEDGE CENTER ---------------- */
+  const topics = [
+    { tag:'Databases', title:'SQL Indexes', body:'How indexes speed up reads, when they slow down writes, and how to choose the right one for a query pattern.' },
+    { tag:'Databases', title:'Normalization', body:'Structuring relational data to remove redundancy while keeping queries practical — 1NF through 3NF in real schemas.' },
+    { tag:'Databases', title:'Database Design', body:'Modeling entities and relationships up front so the schema supports both transactional use and later reporting.' },
+    { tag:'Backend', title:'Laravel', body:'MVC structure, Eloquent ORM, middleware and authentication patterns used across the admin platforms in this portfolio.' },
+    { tag:'Backend', title:'Node.js', body:'Building REST APIs and services outside the PHP ecosystem, exploring async patterns and Express.' },
+    { tag:'Data Engineering', title:'ETL', body:'Extracting, transforming and loading data reliably — the foundation for any pipeline feeding a dashboard.' },
+    { tag:'Data Engineering', title:'Data Modeling', body:'Designing schemas and structures with analytics in mind, not just transactional correctness.' },
+    { tag:'Analytics', title:'Power BI', body:'Turning modeled data into dashboards stakeholders can actually use — currently deepening this skill.' },
+    { tag:'Data Engineering', title:'Python', body:'Picking up Python as a complement to SQL for data transformation and automation scripts.' },
+  ];
+  const kGrid = document.getElementById('knowledge-grid');
+  topics.forEach(t=>{
+    kGrid.insertAdjacentHTML('beforeend', `
+      <div class="kc-card">
+        <div class="kc-topic">${t.tag}</div>
+        <h4>${t.title}</h4>
+        <p>${t.body}</p>
+      </div>`);
+  });
+ 
+  /* ---------------- SKILLS ---------------- */
+  const skillCats = [
+    { name:'Backend', items:[['Laravel','core'],['PHP','core'],['Node.js','prof'],['Express.js','prof'],['REST APIs','core'],['MVC Architecture','core'],['Authentication','core']] },
+    { name:'Databases', items:[['SQL','core'],['MySQL','core'],['PostgreSQL','learn'],['Database Design','core'],['Normalization','core'],['Indexes','core'],['Stored Procedures','prof']] },
+    { name:'Data Engineering', items:[['SQL Pipelines','prof'],['ETL Concepts','learn'],['Data Transformation','prof'],['Relational Modeling','core'],['Python','learn']] },
+    { name:'Data Analytics', items:[['KPI Design','prof'],['Business Intelligence','prof'],['Dashboard Design','core'],['Power BI','learn'],['Excel','prof'],['SQL Analytics','core']] },
+    { name:'Frontend', items:[['HTML','core'],['CSS','core'],['JavaScript','core'],['React','prof'],['Responsive Design','prof']] },
+    { name:'Tools', items:[['Git','core'],['GitHub','core'],['VS Code','core'],['DBeaver','prof'],['Vercel','prof']] },
+  ];
+  const lvClass = { core:'lv-core', prof:'lv-prof', learn:'lv-learn' };
+  const sGrid = document.getElementById('skills-grid');
+  skillCats.forEach(c=>{
+    const tags = c.items.map(([n,l])=>`<span class="skill-tag"><span class="lv-dot ${lvClass[l]}"></span>${n}</span>`).join('');
+    sGrid.insertAdjacentHTML('beforeend', `<div class="skill-cat"><h3>${c.name}</h3><div class="skill-tags">${tags}</div></div>`);
+  });
+ 
+  /* ---------------- EXPERIENCE TIMELINE ---------------- */
+  const tlData = [
+    { phase:'Foundation', title:'Backend &amp; database fundamentals', body:'Built a solid base in PHP, Laravel and MySQL — authentication, CRUD systems and relational schema design.', current:false },
+    { phase:'Applied projects', title:'Administrative platforms &amp; BI', body:'Delivered the Indicators Management System: role-based access, dashboards, interactive reports and maps on top of a designed-from-scratch database.', current:false },
+    { phase:'Full-stack expansion', title:'Consumer-facing product design', body:'Built the Webtoon Platform, focusing on a schema that scales toward analytics and recommendation features.', current:false },
+    { phase:'Current focus', title:'SQL optimization &amp; data analysis', body:'Deepening query optimization, execution plans, and turning data into KPI dashboards and business metrics.', current:true },
+    { phase:'In progress', title:'Data Engineering specialization', body:'Learning PostgreSQL, Python and ETL concepts to formalize the shift toward Data Engineering.', current:false },
+  ];
+  const tl = document.getElementById('timeline');
+  tlData.forEach(t=>{
+    tl.insertAdjacentHTML('beforeend', `
+      <div class="tl-item ${t.current?'current':''}">
+        <span class="tl-dot"></span>
+        <div class="tl-phase">${t.phase}</div>
+        <h4>${t.title}</h4>
+        <p>${t.body}</p>
+      </div>`);
+  });
+ 
+  /* ---------------- SQL LAB CONSOLE ---------------- */
+  const out = document.getElementById('console-out');
+  const input = document.getElementById('console-input');
+ 
+  function println(html){ out.insertAdjacentHTML('beforeend', `<div>${html}</div>`); out.scrollTop = out.scrollHeight; }
+  function printCmd(cmd){ println(`<span class="ln-cmd">${cmd}</span>`); }
+ 
+  const responses = {
+    help: () => `<span class="hint">Available commands:</span><br>
+      <b>projects</b> — list project records<br>
+      <b>skills</b> — show skill categories<br>
+      <b>experience</b> — show career roadmap<br>
+      <b>analytics</b> — summarize the stack<br>
+      <b>resume</b> — open the resume page<br>
+      <b>contact</b> — get in touch<br>
+      <b>clear</b> — clear the console`,
+    projects: () => `<table><tr><th>id</th><th>name</th><th>status</th></tr>
+      <tr><td class="k">PRJ-001</td><td>Indicators Management System</td><td>production-grade</td></tr>
+      <tr><td class="k">PRJ-002</td><td>Webtoon Platform</td><td>in development</td></tr></table>
+      <span class="hint">→ open the Projects page for full detail.</span>`,
+    skills: () => `<table><tr><th>category</th><th>sample</th></tr>
+      <tr><td class="k">Backend</td><td>Laravel, PHP, REST APIs</td></tr>
+      <tr><td class="k">Databases</td><td>SQL, MySQL, PostgreSQL</td></tr>
+      <tr><td class="k">Data Engineering</td><td>ETL, Python, Data Modeling</td></tr>
+      <tr><td class="k">Data Analytics</td><td>KPI Design, Power BI</td></tr></table>`,
+    experience: () => `<b>Roadmap:</b> Foundation → Applied projects → Full-stack expansion → SQL optimization (current) → Data Engineering specialization (in progress).`,
+    analytics: () => `<b>Stack summary:</b> Laravel/PHP + MySQL as the core, JavaScript on the frontend, PostgreSQL and Python as the emerging Data Engineering layer.`,
+    resume: () => { document.querySelector('.nav-item[data-page="resume"]').click(); return `<span class="hint">opening resume…</span>`; },
+    contact: () => { document.querySelector('.nav-item[data-page="contact"]').click(); return `<span class="hint">opening contact…</span>`; },
+    clear: () => { out.innerHTML=''; return null; }
+  };
+ 
+  function runCommand(raw){
+    const cmd = raw.trim().toLowerCase();
+    if(!cmd) return;
+    printCmd(raw);
+    if(responses[cmd]){
+      const res = responses[cmd]();
+      if(res) println(res);
+    } else {
+      println(`<span style="color:#F0555C">ERROR:</span> unknown command "<span class="k">${cmd}</span>". Type <b>help</b>.`);
     }
   }
-
-  allEntries.sort((a,b)=>a.date-b.date);
-
-  // Group consecutive days per user
-  const grouped = [];
-  const usedKeys = {};
-
-  allEntries.forEach(entry => {
-    const k = entry.userId + '_' + entry.key;
-    if (usedKeys[k]) return;
-
-    // find range
-    let end = new Date(entry.date);
-    let cur = new Date(entry.date);
-    cur.setDate(cur.getDate()+1);
-    while (true) {
-      const nextKey = cur.toISOString().slice(0,10);
-      if (vacations[nextKey] && vacations[nextKey].some(e=>e.userId===entry.userId)) {
-        end = new Date(cur);
-        usedKeys[entry.userId+'_'+nextKey] = true;
-        cur.setDate(cur.getDate()+1);
-      } else break;
-    }
-
-    grouped.push({
-      userId: entry.userId,
-      start: entry.date,
-      end,
-      note: entry.note,
-    });
-    usedKeys[k] = true;
+ 
+  println(`<span class="hint">portfolio console — connected to axel_portfolio (read-only)</span><br><span class="hint">type <b>help</b> to see available commands.</span>`);
+ 
+  input.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ runCommand(input.value); input.value=''; }
   });
-
-  if (grouped.length === 0) {
-    list.innerHTML = '<div class="no-upcoming">No hay vacaciones próximas 🏖️</div>';
-    return;
-  }
-
-  grouped.slice(0,8).forEach(g => {
-    const u = getUserById(g.userId);
-    if (!u) return;
-    const fmt = (d) => `${d.getDate()} ${MONTH_NAMES[d.getMonth()].slice(0,3)}`;
-    const sameDay = g.start.toDateString()===g.end.toDateString();
-    const datesStr = sameDay ? fmt(g.start) : `${fmt(g.start)} – ${fmt(g.end)}`;
-
-    const item = document.createElement('div');
-    item.className = 'upcoming-item';
-    item.innerHTML = `
-      <div class="upcoming-dot" style="background:${u.color}"></div>
-      <div class="upcoming-info">
-        <div class="name">${u.name}</div>
-        <div class="dates">${datesStr}</div>
-        ${g.note ? `<div class="note">${g.note}</div>` : ''}
-      </div>`;
-    list.appendChild(item);
+  document.querySelectorAll('.sql-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{ runCommand(chip.dataset.cmd); input.focus(); });
   });
-}
-
-/* ── FORM ── */
-function initForm() {
-  const sel = document.getElementById('selUser');
-  USERS.forEach(u => {
-    const opt = document.createElement('option');
-    opt.value = u.id;
-    opt.textContent = u.name;
-    sel.appendChild(opt);
+ 
+  /* ---------------- CONTACT FORM (visual only) ---------------- */
+  const toast = document.getElementById('toast');
+  document.getElementById('send-btn').addEventListener('click', ()=>{
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 2600);
   });
-
-  // Default dates
-  const today = new Date().toISOString().slice(0,10);
-  document.getElementById('dateFrom').value = today;
-  document.getElementById('dateTo').value = today;
-
-  document.getElementById('btnSave').addEventListener('click', () => {
-    const userId = document.getElementById('selUser').value;
-    const from = document.getElementById('dateFrom').value;
-    const to = document.getElementById('dateTo').value;
-    const note = document.getElementById('note').value.trim();
-
-    if (!from || !to) { toastMsg('⚠️ Selecciona fechas'); return; }
-    if (from > to) { toastMsg('⚠️ La fecha inicio debe ser antes del fin'); return; }
-
-    const days = getDaysInRange(from, to);
-    if (days.length > 60) { toastMsg('⚠️ Máximo 60 días por registro'); return; }
-
-    let added = 0;
-    days.forEach(key => {
-      if (!vacations[key]) vacations[key] = [];
-      // Avoid duplicate for same user
-      if (!vacations[key].some(e=>e.userId===userId)) {
-        vacations[key].push({ userId, note });
-        added++;
-      }
-    });
-
-    saveData();
-    renderCalendar();
-    document.getElementById('note').value = '';
-
-    const u = getUserById(userId);
-    toastMsg(`✅ ${u.name}: ${added} día${added!==1?'s':''} guardado${added!==1?'s':''}`);
-  });
-}
-
-/* ── YEAR NAV ── */
-document.getElementById('prevYear').addEventListener('click', () => {
-  currentYear--;
-  renderCalendar();
-});
-document.getElementById('nextYear').addEventListener('click', () => {
-  currentYear++;
-  renderCalendar();
-});
-
-/* ── INIT ── */
-loadData();
-initForm();
-renderCalendar();
+ 
+})();
 </script>
-</body>
-</html>
